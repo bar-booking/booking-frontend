@@ -1,7 +1,7 @@
 import { Button, Form, Input } from 'antd'
 import React from 'react'
 
-import { useAuth, useCaptcha } from 'pages/auth/lib'
+import { useAuth, useCaptcha } from './lib'
 
 export const Auth = () => {
   const { ref, captcha } = useCaptcha<HTMLDivElement>()
