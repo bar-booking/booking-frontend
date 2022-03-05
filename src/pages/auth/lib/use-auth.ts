@@ -1,26 +1,32 @@
 import { notification } from 'antd'
 import { useCallback, useState } from 'react'
 
-import { postAuthCode, postAuthNumber } from 'entities/auth/api'
+import { postTriggerVerification } from 'entities/auth/api'
+import { useAuthContext } from 'processes/auth/lib'
+import { obtainTokens } from 'shared/api'
 
 interface Params {
   recaptchaToken?: string
 }
 
 export const useAuth = ({ recaptchaToken }: Params) => {
+  const { setIsAuthorized } = useAuthContext()
   const [isNumberSubmitted, setIsNumberSubmitted] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState<string>()
 
   const handleSubmitNumber = useCallback(
     async (
-      values: Omit<Components.Schemas.PostNumberDto, `recaptchaToken`>,
+      values: Omit<
+        Parameters<typeof postTriggerVerification>[0],
+        `recaptchaToken`
+      >,
     ) => {
       if (!recaptchaToken) {
         return
       }
 
       try {
-        await postAuthNumber({ recaptchaToken, ...values })
+        await postTriggerVerification({ recaptchaToken, ...values })
         notification.success({ message: `Вам отправлено сообщение` })
         setPhoneNumber(values.phoneNumber)
         setIsNumberSubmitted(true)
@@ -33,20 +39,21 @@ export const useAuth = ({ recaptchaToken }: Params) => {
   )
 
   const handleSubmitCode = useCallback(
-    async (values: Omit<Components.Schemas.PostCodeDto, `phoneNumber`>) => {
+    async (values: Omit<Parameters<typeof obtainTokens>[0], `phoneNumber`>) => {
       if (!phoneNumber) {
         return
       }
 
       try {
-        await postAuthCode({ phoneNumber, ...values })
+        await obtainTokens({ phoneNumber, ...values })
+        setIsAuthorized(true)
         notification.success({ message: `Номер подтверждён` })
       } catch (error) {
         console.error(error)
         notification.error({ message: `Ошибка при подтверждении` })
       }
     },
-    [phoneNumber],
+    [phoneNumber, setIsAuthorized],
   )
 
   return { handleSubmitNumber, handleSubmitCode, isNumberSubmitted }
