@@ -1,4 +1,7 @@
 export const routes = {
   authNumber: `/auth/number`,
-  authCode: `/auth/code`,
+  authLogin: `/auth/login`,
+  authRefresh: `/auth/refresh`,
+
+  usersMe: `/users/me`
 }
