@@ -3,5 +3,5 @@ export const routes = {
   authLogin: `/auth/login`,
   authRefresh: `/auth/refresh`,
 
-  usersMe: `/users/me`
+  usersMe: `/users/me`,
 }
