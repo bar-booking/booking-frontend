@@ -24,6 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - id: restore-build-cache
+        uses: actions/cache@v2
+        with:
+          path: build
+          key: build-${{ github.sha }}
       - if: steps.restore-build-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v2
         with:
